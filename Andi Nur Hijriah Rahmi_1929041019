@@ -1,0 +1,47 @@
+//UAS Project Mandiri Teknik Kendali Digital
+//Andi Nur Hijriah Rahmi
+//1929041019
+//PTIK B 2019
+
+const int pinLampu = 3;
+const int pinAnalog = A0;
+const int ambangRerata = 15;
+const int jumSempel = 128;
+const int nilaiDasar = 514;
+
+int totalIsyarat = 0;;
+boolean statusLampu = false;
+
+void setup() {
+Serial.begin (9600);
+pinMode (pinLampu, OUTPUT);
+}
+
+//Konstanta jumSempel digunakan untuk menentukan jumlah nilai pinAnalog yang hendak di reratakan
+void loop() {
+int nilaiAnalog;
+
+//Untuk menghitung nilai rerataIsyarat, mula-mula variabel totalIsyarat di isi dengan 0. 
+totalIsyarat = 0;
+for (int j = 1; j <= jumSempel; j++) //Kemudian, melalui pernyataan for nilai total untuk 128 nilai analog diperoleh di for tersebut.
+{
+  nilaiAnalog = analogRead (pinAnalog);
+
+  int isyarat = abs (nilaiAnalog - nilaiDasar); //Program ini digunakan untuk menghitung tinggi isyarat terhadap titik tengah atau nilai 514. Fungsi abs digunakan karena tinggi isyarat bisa negatif terhadap titik tengah.
+  totalIsyarat += isyarat; //Program ini fungsinya untuk menaikkan isi total isyarat sebesar nilai isyarat. Setelah total isyarat berisi penjumlahan sebanyak 128 atau ujung sampel nilai yang dibaca dari pinAnalog A0 nilai reratanya diperoleh dari int rerataIsyarat = totalIsyarat / jumSempel.
+}
+
+int rerataIsyarat = totalIsyarat / jumSempel; //Nilai dari rerata ini digunakan sebagai dasar untuk menghidupkan atau mematikan sebuah lampu atau tidak menghidupkan sama sekali. Hal ini dilakukan if (rerataIsyarat >= ambangRerata.
+
+Serial.print ("Nilai Analog : ");
+Serial.print (nilaiAnalog);
+Serial.print (", Rerata: ");
+Serial.println (rerataIsyarat);
+
+if (rerataIsyarat >= ambangRerata) //Fungsinya untuk menghidupkan atau mematikan lampu, ketika nilai rerata melebihi atau sama dengan nilai ambang yang telah ditetapkan. Sehingga, dalam hal ini, 3 perintah program dibawah akan di proses.
+{
+  statusLampu = not statusLampu; //Pernyataan pertama digunakan untuk membalik nilai logika pada variabel global, status lampu jika semua variabel status lampu berisi false, nilainya diubah menjadi true. Namun, jika semua variabel status lampu berisi true, maka nilainya diubah menjadi false.
+  digitalWrite (pinLampu, statusLampu); //Pernyataan kedua digunakan untuk menyalakan atau mematikan lampu bergantung pada nilai status lampu.
+  delay (2000); //Dan untuk pernyataan ini digunakan untuk menunda eksekusi selama 2 detik.
+}
+}
